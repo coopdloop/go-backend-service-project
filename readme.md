@@ -1,0 +1,1 @@
+This is simply a simple project to learn htmx + go. It's purpose is to deploy as a backend API service. The frontend is a simple html page with a form that sends a POST request to the backend. The backend then returns a server side rendered response. The frontend then updates the page with the response.
