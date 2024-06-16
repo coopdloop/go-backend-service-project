@@ -1,7 +1,7 @@
 from golang:1.22.0 AS build-stage
   WORKDIR /app
 
-  COPY go.mod go.sum ./ 
+  COPY go.mod ./ 
   RUN go mod download
   
   RUN apt-get update -yq \
