@@ -4,6 +4,14 @@ on:
   push:
     branches:
       - main
+env:
+  AWS_REGION: us-east-1                 # set this to your preferred AWS region, e.g. us-west-1
+  ECR_REPOSITORY: MY_ECR_REPOSITORY           # set this to your Amazon ECR repository name
+                                              # file, e.g. .aws/task-definition.json
+  CONTAINER_NAME: MY_CONTAINER_NAME           # set this to the name of the container in the
+
+permissions:
+  contents: read                              # containerDefinitions section of your task definition
 
 jobs:
   build-and-push:
@@ -11,24 +19,28 @@ jobs:
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: your-aws-region
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
-        run: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 510046314388.dkr.ecr.us-east-1.amazonaws.com/stock-app
+        uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build the Docker Image
-        run: docker build -t stock-app:latest .
-
-      - name: Tag the Docker Image
-        run: docker tag stock-app:latest 510046314388.dkr.ecr.us-east-1.amazonaws.com/stock-app:latest
-
-      - name: Push Docker Image to ECR
-        run: docker push 510046314388.dkr.ecr.us-east-1.amazonaws.com/stock-app:latest
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build -t 510046314388.dkr.ecr.us-east-1.amazonaws.com/stock-app:latest .
+          docker push 510046314388.dkr.ecr.us-east-1.amazonaws.com/stock-app:latest
+   

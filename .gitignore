@@ -18,6 +18,9 @@
 .env
 .envrc
 
+#tf test
+tf/
+
 # air
 tmp/
 
