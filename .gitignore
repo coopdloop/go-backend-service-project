@@ -16,6 +16,7 @@
 
 # env
 .env
+.envrc
 
 # air
 tmp/
