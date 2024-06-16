@@ -1,8 +1,17 @@
 from golang:1.22.0 AS build-stage
+  # smoke test to verify if golang is available
+  RUN go version
+
   WORKDIR /app
 
-  COPY go.mod ./ 
-  RUN go mod download
+  COPY go.mod go.sum ./ 
+
+  RUN set -Eeux && \
+    go mod download && \
+    go mod verify
+
+
+  # RUN go mod download
   
   RUN apt-get update -yq \
     && apt-get -yq install curl gnupg ca-certificates openssl \

@@ -28,4 +28,4 @@ tmp/
 /bin/
 **/*_templ.go
 **/*.env
-*.sum
+.sum
